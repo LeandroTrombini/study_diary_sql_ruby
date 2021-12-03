@@ -1,0 +1,28 @@
+#!/usr/bin/env ruby
+
+puts '== Instalando dependências =='
+system 'gem install bundler --conservative'
+system('bundle check') || system('bundle install')
+
+require 'sqlite3'
+
+puts "\n== Preparando banco de dados =="
+begin
+  db = SQLite3::Database.open "db/database.db"
+  db.execute <<~SQL
+    CREATE TABLE if not exists study_items(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title varchar(255),
+      category varchar(255),
+      descr varchar(255),
+      done BOOLEAN,
+      created_at DATETIME DEFAULT CURRENT_TIMESTAMP
+    );
+  SQL
+
+ 
+rescue SQLite3::Exception => e
+  puts e
+ensure
+  db.close if db
+end
